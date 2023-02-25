@@ -1,3 +1,0 @@
-(function() {var implementors = {
-"black76":[["impl <a class=\"trait\" href=\"https://doc.rust-lang.org/1.67.1/core/marker/trait.Unpin.html\" title=\"trait core::marker::Unpin\">Unpin</a> for <a class=\"enum\" href=\"black76/enum.OptionType.html\" title=\"enum black76::OptionType\">OptionType</a>",1,["black76::inputs::OptionType"]],["impl <a class=\"trait\" href=\"https://doc.rust-lang.org/1.67.1/core/marker/trait.Unpin.html\" title=\"trait core::marker::Unpin\">Unpin</a> for <a class=\"struct\" href=\"black76/struct.Inputs.html\" title=\"struct black76::Inputs\">Inputs</a>",1,["black76::inputs::Inputs"]]]
-};if (window.register_implementors) {window.register_implementors(implementors);} else {window.pending_implementors = implementors;}})()
