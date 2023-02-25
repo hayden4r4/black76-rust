@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"enum":[["OptionType","The type of option to be priced (call or put)."]],"struct":[["Inputs","The inputs to the Black-Scholes-Merton model."]],"trait":[["Greeks",""],["ImpliedVolatility",""],["Pricing",""]]};

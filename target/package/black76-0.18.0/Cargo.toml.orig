@@ -1,0 +1,22 @@
+[package]
+name = "black76"
+version = "0.18.0"
+edition = "2021"
+license = "MIT"
+description = "Black76 option pricing model calculator"
+repository = "https://github.com/hayden4r4/black76-rust"
+documentation = "https://docs.rs/black76"
+readme = "README.md"
+authors = ["Hayden Rose"]
+keywords = ["finance", "option", "pricing", "black76", "option-pricing"]
+
+[[bench]]
+name = "pricing"
+harness = false
+
+[dev-dependencies]
+criterion = "0.4.0"
+
+[dependencies]
+num-traits = "0.2.15"
+statrs = "0.16.0"
