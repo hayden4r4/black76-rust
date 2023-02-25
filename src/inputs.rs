@@ -21,8 +21,8 @@ impl Display for OptionType {
 pub struct Inputs {
     /// The type of the option (call or put)
     pub option_type: OptionType,
-    /// Stock price
-    pub s: f32,
+    /// Futures price
+    pub f: f32,
     /// Strike price
     pub k: f32,
     /// Option price
@@ -42,7 +42,7 @@ impl Inputs {
     /// Creates instance ot the `Inputs` struct.
     /// # Arguments
     /// * `option_type` - The type of option to be priced.
-    /// * `s` - The current price of the underlying asset.
+    /// * `f` - The current price of the underlying asset.
     /// * `k` - The strike price of the option.
     /// * `p` - The dividend yield of the underlying asset.
     /// * `r` - The risk-free interest rate.
@@ -58,7 +58,7 @@ impl Inputs {
     /// An instance of the `Inputs` struct.
     pub fn new(
         option_type: OptionType,
-        s: f32,
+        f: f32,
         k: f32,
         p: Option<f32>,
         r: f32,
@@ -68,7 +68,7 @@ impl Inputs {
     ) -> Self {
         Self {
             option_type,
-            s,
+            f,
             k,
             p,
             r,
@@ -82,7 +82,7 @@ impl Inputs {
 impl Display for Inputs {
     fn fmt(&self, f: &mut Formatter) -> fmtResult {
         writeln!(f, "Option type: {}", self.option_type)?;
-        writeln!(f, "Stock price: {:.2}", self.s)?;
+        writeln!(f, "Stock price: {:.2}", self.f)?;
         writeln!(f, "Strike price: {:.2}", self.k)?;
         match self.p {
             Some(p) => writeln!(f, "Option price: {:.2}", p)?,

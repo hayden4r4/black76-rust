@@ -14,7 +14,8 @@
 //! cargo bench
 //! ```
 //!
-//! See the [Github Repo](https://github.com/hayden4r4/blackscholes-rust/tree/master) for full source code.  Other implementations such as a [npm WASM package](https://www.npmjs.com/package/@haydenr4/blackscholes_wasm) and a [python module](https://pypi.org/project/blackscholes/) are also available.
+//! See the [Github Repo](https://github.com/hayden4r4/black76-rust/tree/master) for full source code.  
+//! See the [Documentation](https://docs.rs/black76/) for full documentation.
 
 mod common;
 mod constants;

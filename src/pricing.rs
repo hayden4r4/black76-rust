@@ -10,7 +10,7 @@ where
 impl Pricing<f32> for Inputs {
     /// Calculates the price of the option.
     /// # Requires
-    /// s, k, r, q, t, sigma.
+    /// f, k, r, q, t, sigma.
     /// # Returns
     /// f32 of the price of the option.
     /// # Example
@@ -25,11 +25,11 @@ impl Pricing<f32> for Inputs {
         let price: f32 = match self.option_type {
             OptionType::Call => f32::max(
                 0.0,
-                nd1 * self.s * E.powf(-self.q * self.t) - nd2 * self.k * E.powf(-self.r * self.t),
+                E.powf(-self.r * self.t) * (nd1 * self.f - nd2 * self.k),
             ),
             OptionType::Put => f32::max(
                 0.0,
-                nd2 * self.k * E.powf(-self.r * self.t) - nd1 * self.s * E.powf(-self.q * self.t),
+                E.powf(-self.r * self.t) * (nd2 * self.k - nd1 * self.f),
             ),
         };
         Ok(price)

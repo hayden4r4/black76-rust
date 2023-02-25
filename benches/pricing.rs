@@ -1,9 +1,9 @@
-use blackscholes::{Inputs, OptionType, Pricing};
+use black76::{Inputs, OptionType, Pricing};
 use criterion::{black_box, criterion_group, criterion_main, Criterion};
 
 const INPUTS: Inputs = Inputs {
     option_type: OptionType::Call,
-    s: 51.03,
+    f: 51.03,
     k: 55.0,
     p: None,
     r: 0.0,

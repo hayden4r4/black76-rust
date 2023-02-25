@@ -15,7 +15,7 @@ impl ImpliedVolatility<f32> for Inputs {
     /// Initializes estimation of sigma using Brenn and Subrahmanyam (1998) method of calculating initial iv estimation.
     /// Uses Newton Raphson algorithm to calculate implied volatility.
     /// # Requires
-    /// s, k, r, q, t, p
+    /// f, k, r, q, t, p
     /// # Returns
     /// f32 of the implied volatility of the option.
     /// # Example:
@@ -31,7 +31,7 @@ impl ImpliedVolatility<f32> for Inputs {
             .p
             .ok_or("inputs.p must contain Some(f32), found None".to_string())?;
         // Initialize estimation of sigma using Brenn and Subrahmanyam (1998) method of calculating initial iv estimation.
-        let mut sigma: f32 = (2.0 * PI / inputs.t).sqrt() * (p / inputs.s);
+        let mut sigma: f32 = (2.0 * PI / inputs.t).sqrt() * (p / inputs.f);
         // Initialize diff to 100 for use in while loop
         let mut diff: f32 = 100.0;
 

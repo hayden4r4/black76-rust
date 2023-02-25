@@ -4,7 +4,7 @@ use statrs::distribution::{ContinuousCDF, Normal};
 
 /// Calculates the d1 and d2 values for the option.
 /// # Requires
-/// s, k, r, q, t, sigma.
+/// f, k, r, q, t, sigma.
 /// # Returns
 /// Tuple (f32, f32) of (d1, d2)
 pub fn calc_d1d2(inputs: &Inputs) -> Result<(f32, f32), String> {
@@ -12,8 +12,7 @@ pub fn calc_d1d2(inputs: &Inputs) -> Result<(f32, f32), String> {
         .sigma
         .ok_or("Expected Some(f32) for self.sigma, received None")?;
     // Calculating numerator of d1
-    let numd1 =
-        (inputs.s / inputs.k).ln() + (inputs.r - inputs.q + (sigma.powi(2)) / 2.0) * inputs.t;
+    let numd1 = (inputs.f / inputs.k).ln() + (sigma.powi(2) / 2.0) * inputs.t;
 
     // Calculating denominator of d1 and d2
     let den = sigma * (inputs.t.sqrt());
@@ -26,7 +25,7 @@ pub fn calc_d1d2(inputs: &Inputs) -> Result<(f32, f32), String> {
 
 /// Calculates the nd1 and nd2 values for the option.
 /// # Requires
-/// s, k, r, q, t, sigma
+/// f, k, r, q, t, sigma
 /// # Returns
 /// Tuple (f32, f32) of (nd1, nd2)
 pub fn calc_nd1nd2(inputs: &Inputs) -> Result<(f32, f32), String> {
@@ -61,7 +60,7 @@ pub fn calc_nd1nd2(inputs: &Inputs) -> Result<(f32, f32), String> {
 /// f32 of the value of the n probability density function.
 pub fn calc_npdf(x: f32) -> f32 {
     let d: f32 = (x - N_MEAN) / N_STD_DEV;
-    (-HALF * d * d).exp() / (SQRT_2PI * N_STD_DEV)
+    (-HALF * d.powi(2)).exp() / (SQRT_2PI * N_STD_DEV)
 }
 
 /// # Returns

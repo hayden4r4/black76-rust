@@ -1,8 +1,8 @@
-use crate::{common::*, constants::*, Inputs, OptionType};
+use crate::{common::*, constants::*, Inputs, OptionType, Pricing};
 use num_traits::Float;
 use std::collections::HashMap;
 
-pub trait Greeks<T>
+pub trait Greeks<T>: Pricing<T>
 where
     T: Float,
 {
@@ -12,6 +12,7 @@ where
     fn calc_vega(&self) -> Result<T, String>;
     fn calc_rho(&self) -> Result<T, String>;
     fn calc_epsilon(&self) -> Result<T, String>;
+    fn calc_lambda(&self) -> Result<T, String>;
     fn calc_vanna(&self) -> Result<T, String>;
     fn calc_charm(&self) -> Result<T, String>;
     fn calc_veta(&self) -> Result<T, String>;
@@ -25,10 +26,14 @@ where
     fn calc_all_greeks(&self) -> Result<HashMap<String, T>, String>;
 }
 
+/// ### Note:
+/// The only verified formulas are for the delta, vega, theta, rho, gamma, vanna, and vomma, sourced from [here](https://en.wikipedia.org/wiki/Greeks_(finance)#Formulas_for_European_option_Greeks).
+/// The remaining greeks were sourced from the same page, with r swapped for q.
+/// If you find that any of these formulas are incorrect, please open an issue on the github repo.
 impl Greeks<f32> for Inputs {
     /// Calculates the delta of the option.
     /// # Requires
-    /// s, k, r, q, t, sigma
+    /// f, k, r, t, sigma
     /// # Returns
     /// f32 of the delta of the option.
     /// # Example
@@ -40,15 +45,15 @@ impl Greeks<f32> for Inputs {
     fn calc_delta(&self) -> Result<f32, String> {
         let (nd1, _): (f32, f32) = calc_nd1nd2(&self)?;
         let delta: f32 = match self.option_type {
-            OptionType::Call => nd1 * E.powf(-self.q * self.t),
-            OptionType::Put => -nd1 * E.powf(-self.q * self.t),
+            OptionType::Call => nd1 * E.powf(-self.r * self.t),
+            OptionType::Put => -nd1 * E.powf(-self.r * self.t),
         };
         Ok(delta)
     }
 
     /// Calculates the gamma of the option.
     /// # Requires
-    /// s, k, r, q, t, sigma
+    /// f, k, r, t, sigma
     /// # Returns
     /// f32 of the gamma of the option.
     /// # Example
@@ -63,14 +68,14 @@ impl Greeks<f32> for Inputs {
             .ok_or("Expected Some(f32) for self.sigma, received None")?;
 
         let nprimed1: f32 = calc_nprimed1(&self)?;
-        let gamma: f32 = E.powf(-self.q * self.t) * nprimed1 / (self.s * sigma * self.t.sqrt());
+        let gamma: f32 = E.powf(-self.r * self.t) * nprimed1 / (self.f * sigma * self.t.sqrt());
         Ok(gamma)
     }
 
     /// Calculates the theta of the option.
     /// Uses 365.25 days in a year for calculations.
     /// # Requires
-    /// s, k, r, q, t, sigma
+    /// f, k, r, t, sigma
     /// # Returns
     /// f32 of theta per day (not per year).
     /// # Example
@@ -90,15 +95,15 @@ impl Greeks<f32> for Inputs {
         // Calculation uses 365.25 for f32: Time of days per year.
         let theta: f32 = match self.option_type {
             OptionType::Call => {
-                (-(self.s * sigma * E.powf(-self.q * self.t) * nprimed1 / (2.0 * self.t.sqrt()))
+                (-(self.f * sigma * E.powf(-self.r * self.t) * nprimed1 / (2.0 * self.t.sqrt()))
                     - self.r * self.k * E.powf(-self.r * self.t) * nd2
-                    + self.q * self.s * E.powf(-self.q * self.t) * nd1)
+                    + self.r * self.f * E.powf(-self.r * self.t) * nd1)
                     / DAYS_PER_YEAR
             }
             OptionType::Put => {
-                (-(self.s * sigma * E.powf(-self.q * self.t) * nprimed1 / (2.0 * self.t.sqrt()))
+                (-(self.f * sigma * E.powf(-self.r * self.t) * nprimed1 / (2.0 * self.t.sqrt()))
                     + self.r * self.k * E.powf(-self.r * self.t) * nd2
-                    - self.q * self.s * E.powf(-self.q * self.t) * nd1)
+                    - self.r * self.f * E.powf(-self.r * self.t) * nd1)
                     / DAYS_PER_YEAR
             }
         };
@@ -107,7 +112,7 @@ impl Greeks<f32> for Inputs {
 
     /// Calculates the vega of the option.
     /// # Requires
-    /// s, k, r, q, t, sigma
+    /// f, k, r, t, sigma
     /// # Returns
     /// f32 of the vega of the option.
     /// # Example
@@ -118,13 +123,13 @@ impl Greeks<f32> for Inputs {
     /// ```
     fn calc_vega(&self) -> Result<f32, String> {
         let nprimed1: f32 = calc_nprimed1(&self)?;
-        let vega: f32 = 0.01 * self.s * E.powf(-self.q * self.t) * self.t.sqrt() * nprimed1;
+        let vega: f32 = 0.01 * self.f * E.powf(-self.r * self.t) * self.t.sqrt() * nprimed1;
         Ok(vega)
     }
 
     /// Calculates the rho of the option.
     /// # Requires
-    /// s, k, r, q, t, sigma
+    /// f, k, r, t, sigma
     /// # Returns
     /// f32 of the rho of the option.
     /// # Example
@@ -134,10 +139,14 @@ impl Greeks<f32> for Inputs {
     /// let rho = inputs.calc_rho().unwrap();
     /// ```
     fn calc_rho(&self) -> Result<f32, String> {
-        let (_, nd2): (f32, f32) = calc_nd1nd2(&self)?;
+        let (nd1, nd2): (f32, f32) = calc_nd1nd2(&self)?;
         let rho: f32 = match &self.option_type {
-            OptionType::Call => 1.0 / 100.0 * self.k * self.t * E.powf(-self.r * self.t) * nd2,
-            OptionType::Put => -1.0 / 100.0 * self.k * self.t * E.powf(-self.r * self.t) * nd2,
+            OptionType::Call => {
+                -1.0 / 100.0 * self.r * E.powf(-self.r * self.t) * (self.f * nd1 - self.k * nd2)
+            }
+            OptionType::Put => {
+                -1.0 / 100.0 * self.r * E.powf(-self.r * self.t) * (self.k * nd2 - self.f * nd1)
+            }
         };
         Ok(rho)
     }
@@ -150,7 +159,7 @@ impl Greeks<f32> for Inputs {
 
     /// Calculates the epsilon of the option.
     /// # Requires
-    /// s, k, r, q, t, sigma
+    /// f, k, r, t, sigma
     /// # Returns
     /// f32 of the epsilon of the option.
     /// # Example
@@ -161,17 +170,33 @@ impl Greeks<f32> for Inputs {
     /// ```
     fn calc_epsilon(&self) -> Result<f32, String> {
         let (nd1, _) = calc_nd1nd2(&self)?;
-        let e_negqt = E.powf(-self.q * self.t);
+        let e_negqt = E.powf(-self.r * self.t);
         let epsilon: f32 = match &self.option_type {
-            OptionType::Call => -self.s * self.t * e_negqt * nd1,
-            OptionType::Put => self.s * self.t * e_negqt * nd1,
+            OptionType::Call => -self.f * self.t * e_negqt * nd1,
+            OptionType::Put => self.f * self.t * e_negqt * nd1,
         };
         Ok(epsilon)
     }
 
-    /// Calculates the vanna of the option.
+    /// Calculates the lambda of the option.
     /// # Requires
     /// s, k, r, q, t, sigma
+    /// # Returns
+    /// f32 of the lambda of the option.
+    /// # Example
+    /// ```
+    /// use blackscholes::{Inputs, OptionType, Greeks, Pricing};
+    /// let inputs = Inputs::new(OptionType::Call, 100.0, 100.0, None, 0.05, 0.2, 20.0/365.25, Some(0.2));
+    /// let lambda = inputs.calc_lambda().unwrap();
+    /// ```
+    fn calc_lambda(&self) -> Result<f32, String> {
+        let delta = self.calc_delta()?;
+        Ok(delta * self.f / self.calc_price()?)
+    }
+
+    /// Calculates the vanna of the option.
+    /// # Requires
+    /// f, k, r, t, sigma
     /// # Returns
     /// f32 of the vanna of the option.
     /// # Example
@@ -187,13 +212,13 @@ impl Greeks<f32> for Inputs {
 
         let nprimed1 = calc_nprimed1(&self)?;
         let (_, d2) = calc_d1d2(&self)?;
-        let vanna: f32 = d2 * E.powf(-self.q * self.t) * nprimed1 * -0.01 / sigma;
+        let vanna: f32 = d2 * E.powf(-self.r * self.t) * nprimed1 * -0.01 / sigma;
         Ok(vanna)
     }
 
     // /// Calculates the charm of the option.
     // /// # Requires
-    // /// s, k, r, q, t, sigma
+    // /// f, k, r, t, sigma
     // /// # Returns
     // /// f32 of the charm of the option.
     // /// # Example
@@ -209,21 +234,21 @@ impl Greeks<f32> for Inputs {
         let nprimed1 = calc_nprimed1(&self)?;
         let (nd1, _) = calc_nd1nd2(&self)?;
         let (_, d2) = calc_d1d2(&self)?;
-        let e_negqt = E.powf(-self.q * self.t);
+        let e_negqt = E.powf(-self.r * self.t);
 
         let charm = match &self.option_type {
             OptionType::Call => {
-                self.q * e_negqt * nd1
+                self.r * e_negqt * nd1
                     - e_negqt
                         * nprimed1
-                        * (2.0 * (self.r - self.q) * self.t - d2 * sigma * self.t.sqrt())
+                        * (2.0 * (self.r - self.r) * self.t - d2 * sigma * self.t.sqrt())
                         / (2.0 * self.t * sigma * self.t.sqrt())
             }
             OptionType::Put => {
-                -self.q * e_negqt * nd1
+                -self.r * e_negqt * nd1
                     - e_negqt
                         * nprimed1
-                        * (2.0 * (self.r - self.q) * self.t - d2 * sigma * self.t.sqrt())
+                        * (2.0 * (self.r - self.r) * self.t - d2 * sigma * self.t.sqrt())
                         / (2.0 * self.t * sigma * self.t.sqrt())
             }
         };
@@ -232,7 +257,7 @@ impl Greeks<f32> for Inputs {
 
     /// Calculates the veta of the option.
     /// # Requires
-    /// s, k, r, q, t, sigma
+    /// f, k, r, t, sigma
     /// # Returns
     /// f32 of the veta of the option.
     /// # Example
@@ -247,20 +272,20 @@ impl Greeks<f32> for Inputs {
             .ok_or("Expected Some(f32) for self.sigma, received None")?;
         let nprimed1 = calc_nprimed1(&self)?;
         let (d1, d2) = calc_d1d2(&self)?;
-        let e_negqt = E.powf(-self.q * self.t);
+        let e_negqt = E.powf(-self.r * self.t);
 
-        let veta = -self.s
+        let veta = -self.f
             * e_negqt
             * nprimed1
             * self.t.sqrt()
-            * (self.q + ((self.r - self.q) * d1) / (sigma * self.t.sqrt())
+            * (self.r + ((self.r - self.r) * d1) / (sigma * self.t.sqrt())
                 - ((1.0 + d1 * d2) / (2.0 * self.t)));
         Ok(veta)
     }
 
     /// Calculates the vomma of the option.
     /// # Requires
-    /// s, k, r, q, t, sigma
+    /// f, k, r, t, sigma
     /// # Returns
     /// f32 of the vomma of the option.
     /// # Example
@@ -281,7 +306,7 @@ impl Greeks<f32> for Inputs {
 
     /// Calculates the speed of the option.
     /// # Requires
-    /// s, k, r, q, t, sigma
+    /// f, k, r, t, sigma
     /// # Returns
     /// f32 of the speed of the option.
     /// # Example
@@ -297,13 +322,13 @@ impl Greeks<f32> for Inputs {
         let (d1, _) = calc_d1d2(&self)?;
         let gamma = Inputs::calc_gamma(&self)?;
 
-        let speed = -gamma / self.s * (d1 / (sigma * self.t.sqrt()) + 1.0);
+        let speed = -gamma / self.f * (d1 / (sigma * self.t.sqrt()) + 1.0);
         Ok(speed)
     }
 
     /// Calculates the zomma of the option.
     /// # Requires
-    /// s, k, r, q, t, sigma
+    /// f, k, r, t, sigma
     /// # Returns
     /// f32 of the zomma of the option.
     /// # Example
@@ -325,7 +350,7 @@ impl Greeks<f32> for Inputs {
 
     /// Calculates the color of the option.
     /// # Requires
-    /// s, k, r, q, t, sigma
+    /// f, k, r, t, sigma
     /// # Returns
     /// f32 of the color of the option.
     /// # Example
@@ -340,13 +365,13 @@ impl Greeks<f32> for Inputs {
             .ok_or("Expected Some(f32) for self.sigma, received None")?;
         let (d1, d2) = calc_d1d2(&self)?;
         let nprimed1 = calc_nprimed1(&self)?;
-        let e_negqt = E.powf(-self.q * self.t);
+        let e_negqt = E.powf(-self.r * self.t);
 
         let color = -e_negqt
-            * (nprimed1 / (2.0 * self.s * self.t * sigma * self.t.sqrt()))
-            * (2.0 * self.q * self.t
+            * (nprimed1 / (2.0 * self.f * self.t * sigma * self.t.sqrt()))
+            * (2.0 * self.r * self.t
                 + 1.0
-                + (2.0 * (self.r - self.q) * self.t - d2 * sigma * self.t.sqrt())
+                + (2.0 * (self.r - self.r) * self.t - d2 * sigma * self.t.sqrt())
                     / (sigma * self.t.sqrt())
                     * d1);
         Ok(color)
@@ -354,7 +379,7 @@ impl Greeks<f32> for Inputs {
 
     /// Calculates the ultima of the option.
     /// # Requires
-    /// s, k, r, q, t, sigma
+    /// f, k, r, t, sigma
     /// # Returns
     /// f32 of the ultima of the option.
     /// # Example
@@ -377,7 +402,7 @@ impl Greeks<f32> for Inputs {
 
     /// Calculates the dual delta of the option.
     /// # Requires
-    /// s, k, r, q, t, sigma
+    /// f, k, r, t, sigma
     /// # Returns
     /// f32 of the dual delta of the option.
     /// # Example
@@ -388,7 +413,7 @@ impl Greeks<f32> for Inputs {
     /// ```
     fn calc_dual_delta(&self) -> Result<f32, String> {
         let (_, nd2) = calc_nd1nd2(&self)?;
-        let e_negqt = E.powf(-self.q * self.t);
+        let e_negqt = E.powf(-self.r * self.t);
 
         let dual_delta = match self.option_type {
             OptionType::Call => -e_negqt * nd2,
@@ -399,7 +424,7 @@ impl Greeks<f32> for Inputs {
 
     /// Calculates the dual gamma of the option.
     /// # Requires
-    /// s, k, r, q, t, sigma
+    /// f, k, r, t, sigma
     /// # Returns
     /// f32 of the dual gamma of the option.
     /// # Example
@@ -413,7 +438,7 @@ impl Greeks<f32> for Inputs {
             .sigma
             .ok_or("Expected Some(f32) for self.sigma, received None")?;
         let nprimed2 = calc_nprimed2(&self)?;
-        let e_negqt = E.powf(-self.q * self.t);
+        let e_negqt = E.powf(-self.r * self.t);
 
         let dual_gamma = e_negqt * (nprimed2 / (self.k * sigma * self.t.sqrt()));
         Ok(dual_gamma)
@@ -421,7 +446,7 @@ impl Greeks<f32> for Inputs {
 
     /// Calculates all Greeks of the option.
     /// # Requires
-    /// s, k, r, q, t, sigma
+    /// f, k, r, t, sigma
     /// # Returns
     /// HashMap of type <String, f32> of all Greeks of the option.
     /// # Example
@@ -431,13 +456,14 @@ impl Greeks<f32> for Inputs {
     /// let greeks = inputs.calc_all_greeks().unwrap();
     /// ```
     fn calc_all_greeks(&self) -> Result<HashMap<String, f32>, String> {
-        let mut greeks: HashMap<String, f32> = HashMap::with_capacity(16);
+        let mut greeks: HashMap<String, f32> = HashMap::with_capacity(17);
         greeks.insert("delta".into(), self.calc_delta()?);
         greeks.insert("gamma".into(), self.calc_gamma()?);
         greeks.insert("theta".into(), self.calc_theta()?);
         greeks.insert("vega".into(), self.calc_vega()?);
         greeks.insert("rho".into(), self.calc_rho()?);
         greeks.insert("epsilon".into(), self.calc_epsilon()?);
+        greeks.insert("lambda".into(), self.calc_lambda()?);
         greeks.insert("vanna".into(), self.calc_vanna()?);
         greeks.insert("charm".into(), self.calc_charm()?);
         greeks.insert("veta".into(), self.calc_veta()?);
