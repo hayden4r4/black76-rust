@@ -1,16 +1,16 @@
-//! This library provides an simple, lightweight, and efficient (though not heavily optimized) implementation of the Black-Scholes-Merton model for pricing European options.
+//! This library provides an simple, lightweight, and efficient (though not heavily optimized) implementation of the Black76 model for pricing European options.
 //!
 //! Provides methods for pricing options, calculating implied volatility, and calculating the first, second, and third order Greeks.
 //!
 //! ### Example:
 //! ```
-//! use blackscholes::{Inputs, OptionType, Pricing};
-//! let inputs = Inputs::new(OptionType::Call, 100.0, 100.0, None, 0.05, 0.2, 20.0/365.25, Some(0.2));
+//! use black76::{Inputs, OptionType, Pricing};
+//! let inputs = Inputs::new(OptionType::Call, 100.0, 100.0, None, 0.05, 20.0/365.25, Some(0.2));
 //! let price: f32 = inputs.calc_price().unwrap();
 //! ```
 //!
 //! Criterion benchmark can be ran by running:
-//! ```
+//! ```text
 //! cargo bench
 //! ```
 //!
