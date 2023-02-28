@@ -29,8 +29,6 @@ pub struct Inputs {
     pub p: Option<f32>,
     /// Risk-free rate
     pub r: f32,
-    /// Dividend yield
-    pub q: f32,
     /// Time to maturity in years
     pub t: f32,
     /// Volatility
@@ -62,7 +60,6 @@ impl Inputs {
         k: f32,
         p: Option<f32>,
         r: f32,
-        q: f32,
         t: f32,
         sigma: Option<f32>,
     ) -> Self {
@@ -72,7 +69,6 @@ impl Inputs {
             k,
             p,
             r,
-            q,
             t,
             sigma,
         }
@@ -89,7 +85,6 @@ impl Display for Inputs {
             None => writeln!(f, "Option price: None")?,
         }
         writeln!(f, "Risk-free rate: {:.4}", self.r)?;
-        writeln!(f, "Dividend yield: {:.4}", self.q)?;
         writeln!(f, "Time to maturity: {:.4}", self.t)?;
         match self.sigma {
             Some(sigma) => writeln!(f, "Volatility: {:.4}", sigma)?,
