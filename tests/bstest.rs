@@ -6,7 +6,6 @@ const INPUTS_CALL_OTM: black76::Inputs = black76::Inputs {
     k: 110.0,
     p: None,
     r: 0.05,
-    q: 0.05,
     t: 20.0 / 365.25,
     sigma: Some(0.2),
 };
@@ -16,7 +15,6 @@ const INPUTS_CALL_ITM: black76::Inputs = black76::Inputs {
     k: 90.0,
     p: None,
     r: 0.05,
-    q: 0.05,
     t: 20.0 / 365.25,
     sigma: Some(0.2),
 };
@@ -26,7 +24,6 @@ const INPUTS_PUT_OTM: black76::Inputs = black76::Inputs {
     k: 90.0,
     p: None,
     r: 0.05,
-    q: 0.05,
     t: 20.0 / 365.25,
     sigma: Some(0.2),
 };
@@ -36,7 +33,6 @@ const INPUTS_PUT_ITM: black76::Inputs = black76::Inputs {
     k: 110.0,
     p: None,
     r: 0.05,
-    q: 0.05,
     t: 20.0 / 365.25,
     sigma: Some(0.2),
 };
