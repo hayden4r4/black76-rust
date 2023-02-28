@@ -180,13 +180,13 @@ impl Greeks<f32> for Inputs {
 
     /// Calculates the lambda of the option.
     /// # Requires
-    /// s, k, r, q, t, sigma
+    /// s, k, r, t, sigma
     /// # Returns
     /// f32 of the lambda of the option.
     /// # Example
     /// ```
     /// use blackscholes::{Inputs, OptionType, Greeks, Pricing};
-    /// let inputs = Inputs::new(OptionType::Call, 100.0, 100.0, None, 0.05, 0.2, 20.0/365.25, Some(0.2));
+    /// let inputs = Inputs::new(OptionType::Call, 100.0, 100.0, None, 0.05, 20.0/365.25, Some(0.2));
     /// let lambda = inputs.calc_lambda().unwrap();
     /// ```
     fn calc_lambda(&self) -> Result<f32, String> {

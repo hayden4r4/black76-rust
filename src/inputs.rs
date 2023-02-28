@@ -44,13 +44,12 @@ impl Inputs {
     /// * `k` - The strike price of the option.
     /// * `p` - The dividend yield of the underlying asset.
     /// * `r` - The risk-free interest rate.
-    /// * `q` - The dividend yield of the underlying asset.
     /// * `t` - The time to maturity of the option in years.
     /// * `sigma` - The volatility of the underlying asset.
     /// # Example
     /// ```
     /// use blackscholes::{Inputs, OptionType};
-    /// let inputs = Inputs::new(OptionType::Call, 100.0, 100.0, None, 0.05, 0.2, 20.0/365.25, Some(0.2));
+    /// let inputs = Inputs::new(OptionType::Call, 100.0, 100.0, None, 0.05, 20.0/365.25, Some(0.2));
     /// ```
     /// # Returns
     /// An instance of the `Inputs` struct.

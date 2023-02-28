@@ -16,7 +16,7 @@ impl Pricing<f32> for Inputs {
     /// # Example
     /// ```
     /// use blackscholes::{Inputs, OptionType, Pricing};
-    /// let inputs = Inputs::new(OptionType::Call, 100.0, 100.0, None, 0.05, 0.2, 20.0/365.25, Some(0.2));
+    /// let inputs = Inputs::new(OptionType::Call, 100.0, 100.0, None, 0.05, 20.0/365.25, Some(0.2));
     /// let price = inputs.calc_price().unwrap();
     /// ```
     fn calc_price(&self) -> Result<f32, String> {
