@@ -11,7 +11,6 @@ where
     fn calc_theta(&self) -> Result<T, String>;
     fn calc_vega(&self) -> Result<T, String>;
     fn calc_rho(&self) -> Result<T, String>;
-    fn calc_epsilon(&self) -> Result<T, String>;
     fn calc_lambda(&self) -> Result<T, String>;
     fn calc_vanna(&self) -> Result<T, String>;
     fn calc_charm(&self) -> Result<T, String>;
@@ -156,27 +155,6 @@ impl Greeks<f32> for Inputs {
     // Some sources I reviewed contain variations of these formulas and/or varying values, therefore the
     // values returned by this library may not match other libraries or sources.
     // These functions have not been throughouly tested.
-
-    /// Calculates the epsilon of the option.
-    /// # Requires
-    /// f, k, r, t, sigma
-    /// # Returns
-    /// f32 of the epsilon of the option.
-    /// # Example
-    /// ```
-    /// use black76::{Inputs, OptionType, Greeks};
-    /// let inputs = Inputs::new(OptionType::Call, 100.0, 100.0, None, 0.05, 20.0/365.25, Some(0.2));
-    /// let epsilon = inputs.calc_epsilon().unwrap();
-    /// ```
-    fn calc_epsilon(&self) -> Result<f32, String> {
-        let (nd1, _) = calc_nd1nd2(&self)?;
-        let e_negqt = E.powf(-self.r * self.t);
-        let epsilon: f32 = match &self.option_type {
-            OptionType::Call => -self.f * self.t * e_negqt * nd1,
-            OptionType::Put => self.f * self.t * e_negqt * nd1,
-        };
-        Ok(epsilon)
-    }
 
     /// Calculates the lambda of the option.
     /// # Requires
@@ -462,7 +440,6 @@ impl Greeks<f32> for Inputs {
         greeks.insert("theta".into(), self.calc_theta()?);
         greeks.insert("vega".into(), self.calc_vega()?);
         greeks.insert("rho".into(), self.calc_rho()?);
-        greeks.insert("epsilon".into(), self.calc_epsilon()?);
         greeks.insert("lambda".into(), self.calc_lambda()?);
         greeks.insert("vanna".into(), self.calc_vanna()?);
         greeks.insert("charm".into(), self.calc_charm()?);
