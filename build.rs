@@ -21,7 +21,7 @@ fn main() {
         .debug(false)
         .shared_flag(true)
         .opt_level(3)
-        .out_dir(&build_dir)
+        // .out_dir(&build_dir)
         .compile("liblets_be_rational");
 
     println!(
