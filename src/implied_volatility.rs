@@ -24,6 +24,7 @@ impl ImpliedVolatility<f32> for Inputs {
     /// let inputs = Inputs::new(OptionType::Call, 100.0, 100.0, Some(0.2), 0.05, 20.0/365.25, None);
     /// let iv = inputs.calc_iv(0.0001).unwrap();
     /// ```
+    #[allow(non_snake_case)]
     fn calc_iv(&self, tolerance: f32) -> Result<f32, String> {
         let mut inputs: Inputs = self.clone();
 
@@ -31,16 +32,49 @@ impl ImpliedVolatility<f32> for Inputs {
             .p
             .ok_or("inputs.p must contain Some(f32), found None".to_string())?;
         // Initialize estimation of sigma using Brenn and Subrahmanyam (1998) method of calculating initial iv estimation.
-        let mut sigma: f32 = (2.0 * PI / inputs.t).sqrt() * (p / inputs.f);
+        // Note: I have since found that this method is not accurate enough which will sometimes cause the algorithm to fail to converge, hence I have commented it out.
+        // let mut sigma: f32 = (PI2 / inputs.t).sqrt() * (p / inputs.f);
+
+        // Initialize estimation of sigma using Modified Corrado-Miller from ["A MODIFIED CORRADO-MILLER IMPLIED VOLATILITY ESTIMATOR" (2007) by Piotr P√luciennik](https://sin.put.poznan.pl/files/download/37938) method of calculating initial iv estimation.
+        // Note: While this method is more accurate than Brenn and Subrahmanyam (1998) it is still not accurate enough which will sometimes cause the algorithm to fail to converge.
+        // A more accurate method is the "Let's be rational" method from ["Let’s be rational" (2016) by Peter Jackel](http://www.jaeckel.org/LetsBeRational.pdf) however this method is much more complicated so has been omitted.
+        // An example of failure to converge: Inputs::new(OptionType::Call, 105.0, 100.0, Some(30.0), 0.05, 30.0 / 365.25, None).calc_iv(0.0001).unwrap();
+        let X: f32 = inputs.k * E.powf(-inputs.r * inputs.t);
+        let fminusX: f32 = inputs.f - X;
+        let fplusX: f32 = inputs.f + X;
+        let oneoversqrtT: f32 = 1.0 / inputs.t.sqrt();
+
+        let x: f32 = oneoversqrtT * (SQRT_2PI / (fplusX));
+        let y: f32 = p - (inputs.f - inputs.k) / 2.0
+            + ((p - fminusX / 2.0).powf(2.0) - fminusX.powf(2.0) / PI).sqrt();
+
+        let mut sigma: f32 = oneoversqrtT
+            * (SQRT_2PI / fplusX)
+            * (p - fminusX / 2.0 + ((p - fminusX / 2.0).powf(2.0) - fminusX.powf(2.0) / PI).sqrt())
+            + A
+            + B / x
+            + C * y
+            + D / x.powf(2.0)
+            + _E * y.powf(2.0)
+            + F * y / x;
+
+        if sigma.is_nan() {
+            Err("Failed to converge".to_string())?
+        }
+
         // Initialize diff to 100 for use in while loop
         let mut diff: f32 = 100.0;
 
         // Uses Newton Raphson algorithm to calculate implied volatility.
         // Test if the difference between calculated option price and actual option price is > tolerance,
         // if so then iterate until the difference is less than tolerance
-        while diff.abs() > tolerance {
+        while diff.abs() > tolerance.abs() {
             inputs.sigma = Some(sigma);
             diff = Inputs::calc_price(&inputs)? - p;
+            // Skip final set of sigma if diff is less than tolerance
+            if diff <= tolerance.abs() {
+                break;
+            }
             sigma -= diff / (Inputs::calc_vega(&inputs)? * 100.0);
         }
         Ok(sigma)
