@@ -24,6 +24,18 @@ impl ImpliedVolatility<f32> for Inputs {
     /// let inputs = Inputs::new(OptionType::Call, 100.0, 100.0, Some(0.2), 0.05, 20.0/365.25, None);
     /// let iv = inputs.calc_iv(0.0001).unwrap();
     /// ```
+    /// Initial estimation of sigma using Modified Corrado-Miller from ["A MODIFIED CORRADO-MILLER IMPLIED VOLATILITY ESTIMATOR" (2007) by Piotr P√luciennik](https://sin.put.poznan.pl/files/download/37938) method of calculating initial iv estimation.
+    /// Note: While this method is more accurate than Brenn and Subrahmanyam (1998) it will still sometimes fail to converge.
+    /// An example of failure to converge:
+    /// ```
+    /// use black76::{Inputs, OptionType, ImpliedVolatility};
+    /// let inputs = Inputs::new(OptionType::Call, 105.0, 100.0, Some(30.0), 0.05, 30.0 / 365.25, None).calc_iv(0.0001).unwrap();
+    /// // This will fail to converge, the NaN sigma value is checked in the function and will return an error.
+    /// assert(inputs.calc_iv(0.0001).is_err(), true);
+    /// ```
+    ///
+    /// A more accurate method is the "Let's be rational" method from ["Let’s be rational" (2016) by Peter Jackel](http://www.jaeckel.org/LetsBeRational.pdf)
+    /// however this method is much more complicated, it is available as calc_rational_iv() in the RationalImpliedVolatility trait.
     #[allow(non_snake_case)]
     fn calc_iv(&self, tolerance: f32) -> Result<f32, String> {
         let mut inputs: Inputs = self.clone();
@@ -35,10 +47,6 @@ impl ImpliedVolatility<f32> for Inputs {
         // Note: I have since found that this method is not accurate enough which will sometimes cause the algorithm to fail to converge, hence I have commented it out.
         // let mut sigma: f32 = (PI2 / inputs.t).sqrt() * (p / inputs.f);
 
-        // Initialize estimation of sigma using Modified Corrado-Miller from ["A MODIFIED CORRADO-MILLER IMPLIED VOLATILITY ESTIMATOR" (2007) by Piotr P√luciennik](https://sin.put.poznan.pl/files/download/37938) method of calculating initial iv estimation.
-        // Note: While this method is more accurate than Brenn and Subrahmanyam (1998) it is still not accurate enough which will sometimes cause the algorithm to fail to converge.
-        // A more accurate method is the "Let's be rational" method from ["Let’s be rational" (2016) by Peter Jackel](http://www.jaeckel.org/LetsBeRational.pdf) however this method is much more complicated so has been omitted.
-        // An example of failure to converge: Inputs::new(OptionType::Call, 105.0, 100.0, Some(30.0), 0.05, 30.0 / 365.25, None).calc_iv(0.0001).unwrap();
         let X: f32 = inputs.k * E.powf(-inputs.r * inputs.t);
         let fminusX: f32 = inputs.f - X;
         let fplusX: f32 = inputs.f + X;
@@ -71,7 +79,7 @@ impl ImpliedVolatility<f32> for Inputs {
         while diff.abs() > tolerance.abs() {
             inputs.sigma = Some(sigma);
             diff = Inputs::calc_price(&inputs)? - p;
-            // Skip final set of sigma if diff is less than tolerance
+            // Skip final change of sigma if diff is less than tolerance
             if diff <= tolerance.abs() {
                 break;
             }
