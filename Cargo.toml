@@ -1,6 +1,6 @@
 [package]
 name = "black76"
-version = "0.23.2"
+version = "0.23.3"
 edition = "2021"
 license = "MIT"
 description = "Black76 option pricing model calculator"

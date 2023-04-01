@@ -92,11 +92,11 @@ impl ImpliedVolatility<f32> for Inputs {
         while diff.abs() > tolerance.abs() {
             inputs.sigma = Some(sigma);
             diff = Inputs::calc_price(&inputs)? - p;
-            // Skip final change of sigma if diff is less than tolerance
-            if diff <= tolerance.abs() {
-                break;
-            }
             sigma -= diff / (Inputs::calc_vega(&inputs)? * 100.0);
+
+            if sigma.is_nan() || sigma.is_infinite() {
+                Err("Failed to converge".to_string())?
+            }
         }
         Ok(sigma)
     }
