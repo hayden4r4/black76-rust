@@ -48,7 +48,7 @@ impl ImpliedVolatility<f32> for Inputs {
     /// ```
     ///
     /// A more accurate method is the "Let's be rational" method from ["Let’s be rational" (2016) by Peter Jackel](http://www.jaeckel.org/LetsBeRational.pdf)
-    /// however this method is much more complicated, it is available as calc_rational_iv() in the RationalImpliedVolatility trait.
+    /// however this method is much more complicated, it is available as calc_rational_iv().
     #[allow(non_snake_case)]
     fn calc_iv(&self, tolerance: f32) -> Result<f32, String> {
         let mut inputs: Inputs = self.clone();
@@ -57,7 +57,7 @@ impl ImpliedVolatility<f32> for Inputs {
             .p
             .ok_or("inputs.p must contain Some(f32), found None".to_string())?;
         // Initialize estimation of sigma using Brenn and Subrahmanyam (1998) method of calculating initial iv estimation.
-        // Note: I have since found that this method is not accurate enough which will sometimes cause the algorithm to fail to converge, hence I have commented it out.
+        // commented out to replace with modified corrado-miller method.
         // let mut sigma: f32 = (PI2 / inputs.t).sqrt() * (p / inputs.f);
 
         let X: f32 = inputs.k * E.powf(-inputs.r * inputs.t);
