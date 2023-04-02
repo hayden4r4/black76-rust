@@ -11,4 +11,4 @@ pub const B: f32 = -1.16851917e-02;
 pub const C: f32 = 9.63541838e-04;
 pub const D: f32 = 7.53502261e-05;
 pub const _E: f32 = 1.42451646e-05;
-pub const F: f32 = -2.10237683e-05;
+pub const _F: f32 = -2.10237683e-05;

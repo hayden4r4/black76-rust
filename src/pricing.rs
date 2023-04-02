@@ -22,15 +22,14 @@ impl Pricing<f32> for Inputs {
     fn calc_price(&self) -> Result<f32, String> {
         // Calculates the price of the option
         let (nd1, nd2): (f32, f32) = calc_nd1nd2(&self)?;
+        let (f, k) = if self.shifted {
+            calc_shifted_f_k(&self)
+        } else {
+            (self.f, self.k)
+        };
         let price: f32 = match self.option_type {
-            OptionType::Call => f32::max(
-                0.0,
-                E.powf(-self.r * self.t) * (nd1 * self.f - nd2 * self.k),
-            ),
-            OptionType::Put => f32::max(
-                0.0,
-                E.powf(-self.r * self.t) * (nd2 * self.k - nd1 * self.f),
-            ),
+            OptionType::Call => f32::max(0.0, E.powf(-self.r * self.t) * (nd1 * f - nd2 * k)),
+            OptionType::Put => f32::max(0.0, E.powf(-self.r * self.t) * (nd2 * k - nd1 * f)),
         };
         Ok(price)
     }

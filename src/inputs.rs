@@ -33,6 +33,8 @@ pub struct Inputs {
     pub t: f32,
     /// Volatility
     pub sigma: Option<f32>,
+    /// Whether to use the shifted Black76 model (in the case of negative futures/strike prices or rates)
+    pub shifted: bool,
 }
 
 /// Methods for calculating the price, greeks, and implied volatility of an option.
@@ -46,6 +48,7 @@ impl Inputs {
     /// * `r` - The risk-free interest rate.
     /// * `t` - The time to maturity of the option in years.
     /// * `sigma` - The volatility of the underlying asset.
+    /// * `shifted` - Whether to use the shifted Black76 model.
     /// # Example
     /// ```
     /// use black76::{Inputs, OptionType};
@@ -61,6 +64,7 @@ impl Inputs {
         r: f32,
         t: f32,
         sigma: Option<f32>,
+        shifted: bool,
     ) -> Self {
         Self {
             option_type,
@@ -70,6 +74,7 @@ impl Inputs {
             r,
             t,
             sigma,
+            shifted,
         }
     }
 }
@@ -89,6 +94,7 @@ impl Display for Inputs {
             Some(sigma) => writeln!(f, "Volatility: {:.4}", sigma)?,
             None => writeln!(f, "Volatility: None")?,
         }
+        writeln!(f, "Shifted: {}", self.shifted)?;
         Ok(())
     }
 }
