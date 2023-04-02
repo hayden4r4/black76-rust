@@ -5,7 +5,7 @@
 //! ### Example:
 //! ```
 //! use black76::{Inputs, OptionType, Pricing};
-//! let inputs = Inputs::new(OptionType::Call, 100.0, 100.0, None, 0.05, 20.0/365.25, Some(0.2));
+//! let inputs = Inputs::new(OptionType::Call, 100.0, 100.0, None, 0.05, 20.0/365.25, Some(0.2), false);
 //! let price: f32 = inputs.calc_price().unwrap();
 //! ```
 //!

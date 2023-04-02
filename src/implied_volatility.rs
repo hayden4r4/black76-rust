@@ -34,7 +34,7 @@ impl ImpliedVolatility<f32> for Inputs {
     /// # Example:
     /// ```
     /// use black76::{Inputs, OptionType, ImpliedVolatility};
-    /// let inputs = Inputs::new(OptionType::Call, 100.0, 100.0, Some(0.5), 0.05, 20.0/365.25, None);
+    /// let inputs = Inputs::new(OptionType::Call, 100.0, 100.0, Some(0.5), 0.05, 20.0/365.25, None, false);
     /// let iv = inputs.calc_iv(0.0001).unwrap();
     /// ```
     /// Initial estimation of sigma using Modified Corrado-Miller from ["A Modified Corrado-Miller Implied Volatility Estimator" (2007) by Piotr P√luciennik](https://sin.put.poznan.pl/files/download/37938) method of calculating initial iv estimation.
@@ -105,7 +105,7 @@ impl ImpliedVolatility<f32> for Inputs {
     /// # Example:
     /// ```
     /// use black76::{Inputs, OptionType, ImpliedVolatility};
-    /// let inputs = Inputs::new(OptionType::Call, 100.0, 100.0, Some(0.2), 0.05, 20.0/365.25, None);
+    /// let inputs = Inputs::new(OptionType::Call, 100.0, 100.0, Some(0.2), 0.05, 20.0/365.25, None, false);
     /// let iv = inputs.calc_rational_iv().unwrap();
     /// ```
     ///

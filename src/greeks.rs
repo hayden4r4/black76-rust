@@ -38,7 +38,7 @@ impl Greeks<f32> for Inputs {
     /// # Example
     /// ```
     /// use black76::{Inputs, OptionType, Greeks};
-    /// let inputs = Inputs::new(OptionType::Call, 100.0, 100.0, None, 0.05, 20.0/365.25, Some(0.2));
+    /// let inputs = Inputs::new(OptionType::Call, 100.0, 100.0, None, 0.05, 20.0/365.25, Some(0.2), false);
     /// let delta = inputs.calc_delta().unwrap();
     /// ```
     fn calc_delta(&self) -> Result<f32, String> {
@@ -58,7 +58,7 @@ impl Greeks<f32> for Inputs {
     /// # Example
     /// ```
     /// use black76::{Inputs, OptionType, Greeks};
-    /// let inputs = Inputs::new(OptionType::Call, 100.0, 100.0, None, 0.05, 20.0/365.25, Some(0.2));
+    /// let inputs = Inputs::new(OptionType::Call, 100.0, 100.0, None, 0.05, 20.0/365.25, Some(0.2), false);
     /// let gamma = inputs.calc_gamma().unwrap();
     /// ```
     fn calc_gamma(&self) -> Result<f32, String> {
@@ -80,7 +80,7 @@ impl Greeks<f32> for Inputs {
     /// # Example
     /// ```
     /// use black76::{Inputs, OptionType, Greeks};
-    /// let inputs = Inputs::new(OptionType::Call, 100.0, 100.0, None, 0.05, 20.0/365.25, Some(0.2));
+    /// let inputs = Inputs::new(OptionType::Call, 100.0, 100.0, None, 0.05, 20.0/365.25, Some(0.2), false);
     /// let theta = inputs.calc_theta().unwrap();
     /// ```
     fn calc_theta(&self) -> Result<f32, String> {
@@ -117,7 +117,7 @@ impl Greeks<f32> for Inputs {
     /// # Example
     /// ```
     /// use black76::{Inputs, OptionType, Greeks};
-    /// let inputs = Inputs::new(OptionType::Call, 100.0, 100.0, None, 0.05, 20.0/365.25, Some(0.2));
+    /// let inputs = Inputs::new(OptionType::Call, 100.0, 100.0, None, 0.05, 20.0/365.25, Some(0.2), false);
     /// let vega = inputs.calc_vega().unwrap();
     /// ```
     fn calc_vega(&self) -> Result<f32, String> {
@@ -134,7 +134,7 @@ impl Greeks<f32> for Inputs {
     /// # Example
     /// ```
     /// use black76::{Inputs, OptionType, Greeks};
-    /// let inputs = Inputs::new(OptionType::Call, 100.0, 100.0, None, 0.05, 20.0/365.25, Some(0.2));
+    /// let inputs = Inputs::new(OptionType::Call, 100.0, 100.0, None, 0.05, 20.0/365.25, Some(0.2), false);
     /// let rho = inputs.calc_rho().unwrap();
     /// ```
     fn calc_rho(&self) -> Result<f32, String> {
@@ -164,7 +164,7 @@ impl Greeks<f32> for Inputs {
     /// # Example
     /// ```
     /// use black76::{Inputs, OptionType, Greeks, Pricing};
-    /// let inputs = Inputs::new(OptionType::Call, 100.0, 100.0, None, 0.05, 20.0/365.25, Some(0.2));
+    /// let inputs = Inputs::new(OptionType::Call, 100.0, 100.0, None, 0.05, 20.0/365.25, Some(0.2), false);
     /// let lambda = inputs.calc_lambda().unwrap();
     /// ```
     fn calc_lambda(&self) -> Result<f32, String> {
@@ -180,7 +180,7 @@ impl Greeks<f32> for Inputs {
     /// # Example
     /// ```
     /// use black76::{Inputs, OptionType, Greeks};
-    /// let inputs = Inputs::new(OptionType::Call, 100.0, 100.0, None, 0.05, 20.0/365.25, Some(0.2));
+    /// let inputs = Inputs::new(OptionType::Call, 100.0, 100.0, None, 0.05, 20.0/365.25, Some(0.2), false);
     /// let vanna = inputs.calc_vanna().unwrap();
     /// ```
     fn calc_vanna(&self) -> Result<f32, String> {
@@ -202,7 +202,7 @@ impl Greeks<f32> for Inputs {
     // /// # Example
     /// ```
     /// use black76::{Inputs, OptionType, Greeks};
-    /// let inputs = Inputs::new(OptionType::Call, 100.0, 100.0, None, 0.05, 20.0/365.25, Some(0.2));
+    /// let inputs = Inputs::new(OptionType::Call, 100.0, 100.0, None, 0.05, 20.0/365.25, Some(0.2), false);
     /// let charm = inputs.calc_charm().unwrap();
     /// ```
     fn calc_charm(&self) -> Result<f32, String> {
@@ -241,7 +241,7 @@ impl Greeks<f32> for Inputs {
     /// # Example
     /// ```
     /// use black76::{Inputs, OptionType, Greeks};
-    /// let inputs = Inputs::new(OptionType::Call, 100.0, 100.0, None, 0.05, 20.0/365.25, Some(0.2));
+    /// let inputs = Inputs::new(OptionType::Call, 100.0, 100.0, None, 0.05, 20.0/365.25, Some(0.2), false);
     /// let veta = inputs.calc_veta().unwrap();
     /// ```
     fn calc_veta(&self) -> Result<f32, String> {
@@ -269,7 +269,7 @@ impl Greeks<f32> for Inputs {
     /// # Example
     /// ```
     /// use black76::{Inputs, OptionType, Greeks};
-    /// let inputs = Inputs::new(OptionType::Call, 100.0, 100.0, None, 0.05, 20.0/365.25, Some(0.2));
+    /// let inputs = Inputs::new(OptionType::Call, 100.0, 100.0, None, 0.05, 20.0/365.25, Some(0.2), false);
     /// let vomma = inputs.calc_vomma().unwrap();
     /// ```
     fn calc_vomma(&self) -> Result<f32, String> {
@@ -290,7 +290,7 @@ impl Greeks<f32> for Inputs {
     /// # Example
     /// ```
     /// use black76::{Inputs, OptionType, Greeks};
-    /// let inputs = Inputs::new(OptionType::Call, 100.0, 100.0, None, 0.05, 20.0/365.25, Some(0.2));
+    /// let inputs = Inputs::new(OptionType::Call, 100.0, 100.0, None, 0.05, 20.0/365.25, Some(0.2), false);
     /// let speed = inputs.calc_speed().unwrap();
     /// ```
     fn calc_speed(&self) -> Result<f32, String> {
@@ -312,7 +312,7 @@ impl Greeks<f32> for Inputs {
     /// # Example
     /// ```
     /// use black76::{Inputs, OptionType, Greeks};
-    /// let inputs = Inputs::new(OptionType::Call, 100.0, 100.0, None, 0.05, 20.0/365.25, Some(0.2));
+    /// let inputs = Inputs::new(OptionType::Call, 100.0, 100.0, None, 0.05, 20.0/365.25, Some(0.2), false);
     /// let zomma = inputs.calc_zomma().unwrap();
     /// ```
     fn calc_zomma(&self) -> Result<f32, String> {
@@ -334,7 +334,7 @@ impl Greeks<f32> for Inputs {
     /// # Example
     /// ```
     /// use black76::{Inputs, OptionType, Greeks};
-    /// let inputs = Inputs::new(OptionType::Call, 100.0, 100.0, None, 0.05, 20.0/365.25, Some(0.2));
+    /// let inputs = Inputs::new(OptionType::Call, 100.0, 100.0, None, 0.05, 20.0/365.25, Some(0.2), false);
     /// let color = inputs.calc_color().unwrap();
     /// ```
     fn calc_color(&self) -> Result<f32, String> {
@@ -363,7 +363,7 @@ impl Greeks<f32> for Inputs {
     /// # Example
     /// ```
     /// use black76::{Inputs, OptionType, Greeks};
-    /// let inputs = Inputs::new(OptionType::Call, 100.0, 100.0, None, 0.05, 20.0/365.25, Some(0.2));
+    /// let inputs = Inputs::new(OptionType::Call, 100.0, 100.0, None, 0.05, 20.0/365.25, Some(0.2), false);
     /// let ultima = inputs.calc_ultima().unwrap();
     /// ```
     fn calc_ultima(&self) -> Result<f32, String> {
@@ -386,7 +386,7 @@ impl Greeks<f32> for Inputs {
     /// # Example
     /// ```
     /// use black76::{Inputs, OptionType, Greeks};
-    /// let inputs = Inputs::new(OptionType::Call, 100.0, 100.0, None, 0.05, 20.0/365.25, Some(0.2));
+    /// let inputs = Inputs::new(OptionType::Call, 100.0, 100.0, None, 0.05, 20.0/365.25, Some(0.2), false);
     /// let dual_delta = inputs.calc_dual_delta().unwrap();
     /// ```
     fn calc_dual_delta(&self) -> Result<f32, String> {
@@ -408,7 +408,7 @@ impl Greeks<f32> for Inputs {
     /// # Example
     /// ```
     /// use black76::{Inputs, OptionType, Greeks};
-    /// let inputs = Inputs::new(OptionType::Call, 100.0, 100.0, None, 0.05, 20.0/365.25, Some(0.2));
+    /// let inputs = Inputs::new(OptionType::Call, 100.0, 100.0, None, 0.05, 20.0/365.25, Some(0.2), false);
     /// let dual_gamma = inputs.calc_dual_gamma().unwrap();
     /// ```
     fn calc_dual_gamma(&self) -> Result<f32, String> {
@@ -430,7 +430,7 @@ impl Greeks<f32> for Inputs {
     /// # Example
     /// ```
     /// use black76::{Inputs, OptionType, Greeks};
-    /// let inputs = Inputs::new(OptionType::Call, 100.0, 100.0, None, 0.05, 20.0/365.25, Some(0.2));
+    /// let inputs = Inputs::new(OptionType::Call, 100.0, 100.0, None, 0.05, 20.0/365.25, Some(0.2), false);
     /// let greeks = inputs.calc_all_greeks().unwrap();
     /// ```
     fn calc_all_greeks(&self) -> Result<HashMap<String, f32>, String> {

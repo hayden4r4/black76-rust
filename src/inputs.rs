@@ -52,7 +52,7 @@ impl Inputs {
     /// # Example
     /// ```
     /// use black76::{Inputs, OptionType};
-    /// let inputs = Inputs::new(OptionType::Call, 100.0, 100.0, None, 0.05, 20.0/365.25, Some(0.2));
+    /// let inputs = Inputs::new(OptionType::Call, 100.0, 100.0, None, 0.05, 20.0/365.25, Some(0.2), false);
     /// ```
     /// # Returns
     /// An instance of the `Inputs` struct.
